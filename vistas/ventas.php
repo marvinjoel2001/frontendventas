@@ -2,23 +2,14 @@
 //Activamos el almacenamiento en el buffer
 ob_start();
 session_start();
-if (!isset($_SESSION["nombre"]))
-{
-  header("Location: login.html");
-}
-else
-{
 require 'header.php';
-
-if ($_SESSION['Ventas']==1)
-{
 ?>
     <!-- Inicio Contenido PHP-->
     <div class="row">
         <div class="col-lg-12">
             <div class="main-box clearfix">
                 <header class="main-box-header clearfix">
-                     <h2 class="box-title">Ventas  <button class="btn btn-success" id="btnagregar" onclick="mostrarform(true)"><i class="fa fa-plus-circle"></i> Nuevo</button></h2>
+                     <h2 class="box-title">Ventas  <button class="btn btn-success" id="btnagregar" onclick="mostrarform(true)"><i class="fa fa-plus-circle"></i> Nueva Venta</button></h2>
                 </header>
                 <div class="main-box-body clearfix" id="listadoregistros">
                     <div class="table-responsive">
@@ -26,11 +17,10 @@ if ($_SESSION['Ventas']==1)
                             <thead>
                                 <tr>
                                    <th>Opciones</th>
-                                   <th>Venta</th>
-                                    <th>Producto</th>
+                                   <th>N venta</th>
                                     <th>Fecha</th>
-                                    <th>Cantidad</th>
-                                    <th>Precio</th>
+                                    <th>Total</th>
+                                    <th> Mas Iva</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -44,13 +34,13 @@ if ($_SESSION['Ventas']==1)
                         <input type="hidden" name="idventa" id="idventa">
                         <input type="hidden" name="idproductogenerar" id="idproductogenerar">
                         <div class="row" id="listproductos">
-                        <h2 class="box-title"><button class="btn btn-success" onclick="agregar()"><i class="fa fa-plus-circle"></i> Agregar producto</button></h2>
-                        <h1 class="box-title">Venta numero <span id="numventa"></span></h1>
+                     <!--Esta linea se encuentra en desarrollo   <h2 class="box-title"><button class="btn btn-success" onclick="agregar()"><i class="fa fa-plus-circle"></i> Agregar producto</button></h2> -->
+                        <h1 class="box-title">Venta numero</h1>
                            <div class="form-group col-md-7 col-sm-9 col-xs-12">
                             
                             <label>Producto</label>
                             
-                            <select name="idproducto1" id="idproducto1" class="form-control selectpicker" data-live-search="true" required></select>
+                            <select name="idproducto1" id="idproducto1" class="form-control selectpicker select-product" data-live-search="true" required></select>
                                     
                         </div>
                         <div class="form-group col-md-3 col-sm-9 col-xs-12">
@@ -89,22 +79,14 @@ if ($_SESSION['Ventas']==1)
     </div>
     <!-- Fin Contenido PHP-->
     <?php
-}
-else
-{
-  require 'noacceso.php';
-}
+
+
 require 'footer.php';
 ?>
 <script type="text/javascript" src="scripts/ventas.js"></script>
-<script type="text/javascript">
-</script>
-
 
 <!--<script type="text/javascript" src="scripts/prestamos.js?v=<?php echo str_replace('.', '', microtime(true)); ?>"></script>-->
-
 <?php 
-}
 ob_end_flush();
 ?>
 

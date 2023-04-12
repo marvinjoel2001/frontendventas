@@ -1,5 +1,26 @@
 var tabla;
+var idproductogenerar=1; 
+// Obtener el elemento select y el campo input
+const selects = document.querySelectorAll('.select-product');
 
+selects.forEach((select) => {
+  select.addEventListener('change', () => {
+    // Obtener el valor de la opción seleccionada
+    var productg = document.querySelector('#idproductogenerar')
+    let contador = productg.value;
+    for (let i = 1; i <= contador; i++) {
+      var selection = document.querySelector(`#idproducto${i}`);
+      var precioInput = document.querySelector(`#precio${i}`);
+      const opcionSeleccionada = selection.value;
+      // Dividir la cadena en sus partes separadas
+      const valores = opcionSeleccionada.split('-');
+      // Acceder a cada valor por separado
+      const valor2 = valores[1];
+      // Establecer el valor del campo input
+      precioInput.value = valor2;
+    }
+  });
+});
 //Funcion que se ejecuta al inicio
 function init(){
 	
@@ -7,38 +28,61 @@ function init(){
     listar();
     $("#formulario").on("submit",function(e)
 	{
-		guardaryeditar(e);	
+		registerVenta(e);	
 	});
-    
-    //Cargamos los items al select Cliente
-	$.post("../ajax/ventas.php?op=selectProducto", function(r){
-	            $("#idproducto1").append(r);
-	            $('#idproducto1').selectpicker('refresh');
+	$.get("https://localhost:7060/api/Products", function(data) {
+    var options = "";
+    $.each(data, function(key, value) {
+        options += "<option value='" + value.id + "-"+value.price+"'>" + value.name + " - $" + value.price + "</option>";
+    });
+    $("#idproducto1").html(options);
+    $('#idproducto1').selectpicker('refresh');
 	});
-    //Cargamos los items al select Usuarios
+}
+function registerVenta(e) {
+	e.preventDefault(); 
+	var idproducto = document.querySelector('#idproducto1').value;
+	var precioInput = document.querySelector('#precio1').value;
+	var cantidad = document.querySelector('#cantidad1').value;
+  
+	// Verificar que los valores sean válidos
+	if (idproducto && precioInput && cantidad) {
+	  var data = {
+		"productId": parseInt(idproducto),
+		"quantity": parseInt(cantidad),
+		"pricePerUnit": parseFloat(precioInput)
+	  };
+  
+	  $.ajax({
+		type: 'POST',
+		url: 'https://localhost:7060/api/Sales/registerVenta',
+		data: JSON.stringify(data),
+		contentType: 'application/json',
+		success: function(data) {
+			alert("Venta hecha con exito");
+			location.reload();
+
+		},
+		error: function(xhr, textStatus, errorThrown) {
+		  console.log('Error al registrar venta: ' + textStatus);
+		}
+	  });
+	} else {
+	  console.log('Valores inválidos!');
+	}
+  }
    
-}
-function mostrarventa()
-{
-	
-    $.post("../ajax/ventas.php?op=mostrarVenta", function(data, status)
-	{
-		data = JSON.parse(data);		
-		mostrarform(true);
-        $valor=parseInt(data.id) + 1;
-		document.getElementById("numventa").textContent=$valor;
-		$("#ventaultimo").val($valor);
- 	});
-}
-var idproductogenerar=1;    
 function agregar(){
     idproductogenerar= idproductogenerar + 1;
-    var producto='<div class="form-group col-md-7 col-sm-9 col-xs-12"><label>Producto</label><select class="form-control selectpicker" id="idproducto' + idproductogenerar +'" name="idproducto' + idproductogenerar +'" data-live-search="true" >prueba</select></div><div class="form-group col-md-3 col-sm-9 col-xs-12"><label>Cantidad</label><input type="number" name="cantidad' + idproductogenerar +'" id="cantidad' + idproductogenerar +'" class="form-control" placeholder="Cantidad" required></div><div class="form-group col-md-2 col-sm-9 col-xs-12"><label>Precio</label><input type="number" name="precio' + idproductogenerar +'" id="precio' + idproductogenerar +'" class="form-control" placeholder="Precio" required></div>';
+    var producto='<div class="form-group col-md-7 col-sm-9 col-xs-12"><label>Producto</label><select class="form-control selectpicker select-product" id="idproducto' + idproductogenerar +'" name="idproducto' + idproductogenerar +'" data-live-search="true" >prueba</select></div><div class="form-group col-md-3 col-sm-9 col-xs-12"><label>Cantidad</label><input type="number" name="cantidad' + idproductogenerar +'" id="cantidad' + idproductogenerar +'" class="form-control" placeholder="Cantidad" required></div><div class="form-group col-md-2 col-sm-9 col-xs-12"><label>Precio</label><input type="number" name="precio' + idproductogenerar +'" id="precio' + idproductogenerar +'" class="form-control" placeholder="Precio" required></div>';
 	$('#listproductos').append(producto);
-    $.post("../ajax/ventas.php?op=selectProducto", function(r){
-	            $("#idproducto" + idproductogenerar).append(r);
-	            $('#idproducto' + idproductogenerar).selectpicker('refresh');
-	});
+    $.get("https://localhost:7060/api/Products", function(response) {
+    $.each(response, function(i, item) {
+        var option = $('<option></option>').attr("value", item.id+"-"+item.price).text(item.name + ' - $' + item.price);
+        $("#idproducto" + idproductogenerar).append(option); 
+    });
+    $('#idproducto' + idproductogenerar).selectpicker('refresh');
+});
 	$("#idproductogenerar").val(idproductogenerar);
 }
 function calcular(){
@@ -97,16 +141,21 @@ function limpiar(){
 
 //Mostrar Formulario
 function mostrarform(flag)
-{
+{	
 	
 	limpiar();
 	if (flag)
 	{
-		$("#listadoregistros").hide();
-		$("#formularioregistros").show();
-		$("#btnGuardar").prop("disabled",false);
-		$("#btnagregar").hide();
-		
+		bootbox.confirm("¿Se Asignara un nuevo numero a tu venta estas seguro de?", function(result){
+			if(result){
+				$("#listadoregistros").hide();
+				$("#formularioregistros").show();
+				$("#btnGuardar").prop("disabled",false);
+				$("#btnagregar").hide();
+// en desarrollo				createTableTemporally();
+			}
+			
+		})
 	}
 	else
 	{
@@ -115,6 +164,32 @@ function mostrarform(flag)
 		$("#btnagregar").show();
 	}
 }
+/*function createTableTemporally(){
+	const url = "https://localhost:7060/api/Sales";
+	var now = new Date();
+	var token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+	const venta = {
+		date: now.toISOString(),
+		total: 0,
+		tax: 0,
+	};
+	const options = {
+		method: "POST",
+		headers: {
+		"Content-Type": "application/json",
+		"Authorization": `Bearer ${token}`
+		},
+		body: JSON.stringify(venta),
+	};
+	try {
+		const response = fetch(url, options);
+		const data = response.json();
+		console.log(data);
+	} catch (error) {
+		console.error(error);
+	}
+}
+*/
 
 function cancelarform()
 {
@@ -123,32 +198,159 @@ function cancelarform()
 }
 
 
-function listar()
-{
-	tabla=$('#tbllistado').dataTable(
-	{
-		"aProcessing": true,//Activamos el procesamiento del datatables
-	    "aServerSide": true,//Paginación y filtrado realizados por el servidor
-	    dom: 'Bfrtip',//Definimos los elementos del control de tabla
-	    buttons: [		          
-		            'copyHtml5',
-		            'excelHtml5',
-		            'pdf'
-		        ],
-		"ajax":
-				{
-					url: '../ajax/ventas.php?op=listar',
-					type : "get",
-					dataType : "json",						
-					error: function(e){
-						console.log(e.responseText);	
-					}
-				},
-		"bDestroy": true,
-		"iDisplayLength": 10,//Paginación
-	    "order": [[ 0, "desc" ]]//Ordenar (columna,orden)
-	}).DataTable();
+function listar() {
+    tabla = $('#tbllistado').dataTable({
+        "aProcessing": true, //Activamos el procesamiento del datatables
+        "aServerSide": true, //Paginación y filtrado realizados por el servidor
+        dom: 'Bfrtip', //Definimos los elementos del control de tabla
+        buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'pdf'
+        ],
+        "ajax": {
+            url: 'https://localhost:7060/api/Sales',
+            type: "GET",
+            dataType: "json",
+            error: function(e) {
+                console.log(e.responseText);
+            },
+            dataSrc: function (data) {
+                return data;
+            }
+        },
+        "columns": [
+            {
+                "data": null,
+                "render": function (data, type, row) {
+                    return '<button class="btn btn-warning" onclick="mostrar('+row.id+')"> <i class="fa fa-pencil"> </i></button> <button class="btn btn-danger" onclick="eliminar(' + row.id + ')"> <i class="fa fa-trash"> </i></button>';
+                }
+            },
+            { "data": "id" },
+            { "data": "date" },
+            { "data": "total" },
+            { "data": "tax" }
+        ],
+        "bDestroy": true,
+        "iDisplayLength": 10, //Paginación
+        "order": [
+            [0, "desc"]
+        ] //Ordenar (columna,orden)
+    }).DataTable();
 }
+
+
+
+
+
+
+/*function convertirAJson2(e) {
+	e.preventDefault(); // evita el comportamiento por defecto del formulario
+    
+    // obtiene los valores de los campos
+    var name = $("#name").val();
+    var id = $("#id").val();
+    var description = $("#description").val();
+    var price = $("#price").val();
+    var cost = $("#cost").val();
+
+    // crea un objeto con los datos del formulario
+    var data = {
+		id:id,
+        name: name,
+        description: description,
+        price: price,
+        cost: cost
+    };
+
+    // llama a la función para enviar el formulario
+    update('PUT', data);
+}
+//Función para guardar o editar
+function convertirAJson(e) {
+	e.preventDefault(); // evita el comportamiento por defecto del formulario
+    
+    // obtiene los valores de los campos
+    var idproductogenerar = $("#idproductogenerar").val();
+	
+	var idproducto=$("#idproducto").val();
+	var cantidad=$("#cantidad").val();
+
+   
+
+    // crea un objeto con los datos del formulario
+    var data = {
+        name: name,
+        description: description,
+        price: price,
+        cost: cost
+    };
+
+    // llama a la función para enviar el formulario
+    create('POST', data);
+}
+function create(type, data){
+	var token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+	$.ajax({
+		url: "https://localhost:7060/api/Products",
+		type: type,
+		data: JSON.stringify(data),
+		contentType: "application/json; charset=utf-8",
+		headers: {
+			'Authorization': 'Bearer ' + token
+		},
+		success: function(response)
+		{                    
+			bootbox.alert("creado exitosamente");	          
+			mostrarform(false);
+			tabla.ajax.reload();
+		},
+		error: function(error)
+		{
+			console.log("Ah ocurrido un error");
+		}
+	});
+}
+function update(type, data){
+	var token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+	$.ajax({
+		url: "https://localhost:7060/api/Products/" + data.id,
+		type: type,
+		data: JSON.stringify(data),
+		contentType: "application/json; charset=utf-8",
+		headers: {
+			'Authorization': 'Bearer ' + token
+		},
+		success: function(response)
+		{                    
+			bootbox.alert("aptualizado exitosamente");	          
+			mostrarform(false);
+			tabla.ajax.reload();
+		},
+		error: function(error)
+		{
+			console.log("Ah ocurrido un error");
+		}
+	});
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -201,15 +403,29 @@ function mostrar(idventa)
 //Función para eliminar registros
 function eliminar(idventa)
 {
-	bootbox.confirm("¿Está Seguro de eliminar esta Venta se eliminaran todos los de la venta?", function(result){
-		if(result)
+    bootbox.confirm("¿Está Seguro de eliminar esta Venta se eliminaran todos los de la venta?", function(result){
+        if(result)
         {
-        	$.post("../ajax/ventas.php?op=eliminar", {idventa : idventa}, function(e){
-        		bootbox.alert(e);
-	            tabla.ajax.reload();
-        	});	
+            // leer el token de la cookie
+            var token = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+            
+            $.ajax({
+                url: 'https://localhost:7060/api/Sales/' + idventa,
+                type: "DELETE",
+                dataType: "json",
+                headers: {
+                    'Authorization': 'Bearer ' + token // agregar el token como cabecera
+                },
+                success: function(e) {
+                    bootbox.alert(e.message);
+                    location.reload();
+                },
+                error: function(e) {
+                    console.log(e.responseText);
+                }
+            });
         }
-	})
+    })
 }
 
 

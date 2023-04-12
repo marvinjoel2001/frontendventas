@@ -60,7 +60,7 @@ if (strlen(session_id()) < 1)
 <ul class="nav navbar-nav pull-left">
 <li class="dropdown profile-dropdown">
 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-<img src="../files/usuarios/<?php echo $_SESSION['imagen']; ?>" alt=""/>
+<img src="../files/vendedor.jpg" alt=""/>
 <span class="hidden-xs"><?php echo $_SESSION['nombre']; ?></span> <b class="caret"></b>
 </a>
 <ul class="dropdown-menu">
@@ -80,14 +80,14 @@ if (strlen(session_id()) < 1)
 <section id="col-left" class="col-left-nano">
 <div id="col-left-inner" class="col-left-nano-content">
 <div id="user-left-box" class="clearfix hidden-sm hidden-xs dropdown profile2-dropdown">
-<img alt="" src="../files/usuarios/<?php echo $_SESSION['imagen']; ?>"/>
+<img alt="" src="../files/vendedor.jpg"/>
 <div class="user-box">
 <span class="name"><?php echo $_SESSION['nombre']; ?>
 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-angle-down"></i>
 </a>
 <ul class="dropdown-menu">
 
-<li><a href="../ajax/usuarios.php?op=salir"><i class="fa fa-power-off"></i>Salir</a></li>
+<li><a href="../index.php"><i class="fa fa-power-off"></i>Salir</a></li>
 </ul>
 </span>
 <span class="status">
@@ -99,108 +99,45 @@ if (strlen(session_id()) < 1)
 <ul class="nav nav-pills nav-stacked">
        
        <?php 
-            if ($_SESSION['Escritorio']==1)
-            {
+            
               echo '<li>
         <a href="escritorio.php">
         <i class="fa fa-home"></i>
         <span>Escritorio</span>
         </a>
         </li>';
-            }
-            ?>
-        
-         <?php 
-            if ($_SESSION['Clientes']==1)
-            {
-              echo '<li>
-<a href="clientes.php">
-<i class="fa fa-users"></i>
-<span>Clientes</span>
-</a>
-</li>';
-            }
-            ?>
-        
-    <?php 
-            if ($_SESSION['Deudas']==1)
-            {
-              echo '<li>
-<a href="deudas.php">
-<i class="fa fa-money"></i>
-<span>Deudas</span>
-
-</a>
-</li>';
-            }
-            ?>
-                <?php 
-            if ($_SESSION['Pagos']==1)
-            {
-              echo '<li>
-<a href="pagos.php">
-<i class="fa fa-university"></i>
-<span>Pagos</span>
-
-</a>
-</li>';
-            }
-            ?>
-                <?php 
-            if ($_SESSION['Usuarios']==1)
-            {
-              echo '<li>
-<a href="usuarios.php">
-<i class="fa fa-user"></i>
-<span>Usuarios</span>
-</a>
-</li>';
-            }
-            ?>
-                <?php 
-            if ($_SESSION['Gastos']==1)
-            {
-              echo '<li>
-<a href="gastos.php">
-<i class="fa fa-shopping-cart"></i>
-<span>Gastos</span>
-</a>
-</li>';
-            }
+            
             ?>
             <?php 
-            if ($_SESSION['Productos']==1)
-            {
-              echo '<li>
-<a href="productos.php">
-<i class="fa fa-shopping-bag"></i>
-<span>Productos</span>
-</a>
-</li>';
-            }
-            ?>
-            <?php 
-            if ($_SESSION['Entradas']==1)
-            {
-              echo '<li>
-<a href="entradas.php">
-<i class="fa fa-level-up"></i>
-<span>Entradas</span>
-</a>
-</li>';
-            }
-            ?>
-            <?php 
-            if ($_SESSION['Ventas']==1)
-            {
+           
               echo '<li>
 <a href="ventas.php">
 <i class="fa fa-handshake-o"></i>
 <span>Ventas</span>
 </a>
 </li>';
-            }
+            
             ?>
+            <?php 
+           
+           echo '<li>
+<a href="productos.php">
+<i class="fa fa-handshake-o"></i>
+<span>Productos</span>
+</a>
+</li>';
+         
+         ?>
+         <?php 
+           
+           echo '<li>
+<a href="inventario.php">
+<i class="fa fa-handshake-o"></i>
+<span>Inventario</span>
+</a>
+</li>';
+         
+         ?>
                
 </ul>
 </div>
